@@ -48,7 +48,6 @@
 
 ## Screenshots
 
-> *(Drop 2–3 screenshots into an `images/` folder and link here)*
 > - ![Q-6999 test row in Source A](images/screenshot_source_a_q6999.png)
 
 > - ![delegate_recorded status in Source B](images/screenshot_source_b_delegate.png)
