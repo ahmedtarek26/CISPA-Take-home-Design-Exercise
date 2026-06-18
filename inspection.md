@@ -54,3 +54,24 @@
 > - ![delegate_recorded status in Source B](images/screenshot_source_b_delegate.png)
 
 > - ![BK-EXT-77 anomaly in Source C](images/screenshot_source_c_bkext77.png)
+
+## Key Trip ID Findings
+
+**T-1078 — Yusuf Demir**
+- Present in Source B (approval) and Source C (insurance) but **absent from Source A** — no quote was ever issued by the booking agency; the trip was approved and insured without a recorded quote.
+- Name casing inconsistency: Source B stores `Yusuf Demir` (title case) while Source C stores `YUSUF DEMIR` (all caps) — same person, normalization must use case-insensitive matching.
+- Source C booking ref is `BK-EXT-77`, breaking the standard `BK-{number}` pattern — likely an externally-booked trip, which may explain the missing Source A quote.
+
+**T-1091 — Julian Berger**
+- Present in all three sources with matching dates and amounts (`quote_amount = 700 EUR` in A, `total_approved_eur = 700 EUR` in B) — the cleanest record in the dataset.
+- Approval chain in Source B has two steps, both attributed to `M. Schmidt`, but with **different approver IDs** (`u-2305` and `u-2412`) — same name, different identities; possible duplicate account or data entry error; flagged for human review.
+
+**T-1102 — Greta Vogt**
+- Present in all three sources, but Source B contains **two approval records** for the same trip: `A-9106` with `status: approved` and `A-9107` with `status: delegate_recorded`.
+- The `delegate_recorded` record shows `P. Reinhardt (delegate for S. Wolf)` as approver with an explicit `delegate_for` field — this is the source of the ambiguous status anomaly identified earlier.
+- Resolution rule: treat the `approved` record (A-9106) as the primary approval; route `A-9107` to human review as a supplementary delegation note.
+
+**T-9999 — TEST TEST**
+- Present only in Source A (Q-6999); absent from Sources B and C entirely — confirmed orphan test row with no real business record behind it.
+- Identified by: departure date `2099-01-01` (far future), traveller name `TEST TEST`, destination `TEST`, and quote amount of `1 EUR`.
+- Caught and rejected at the schema validation layer before any reconciliation attempt.
